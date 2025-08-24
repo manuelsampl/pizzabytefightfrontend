@@ -1,6 +1,14 @@
 /**
- * Pizza Royale - Main Stylesheet
+ * Pizza Byte Fight - Main Stylesheet
  * Contains all styling for the Pizza Battle Royale game interface
+ * Color Palette:
+ * - #000000: Standard text and text on primary buttons
+ * - #ffffff: Text on secondary buttons and different backgrounds
+ * - #ffe600: Primary button background
+ * - #edb5c1: Main background color
+ * - #fbb33e: Navigation background and headlines (with 4px black stroke)
+ * - #ff0000: Secondary/danger button background
+ * - green: Success/confirm buttons
  */
 
 /* Custom Font Definition - GT Maru Medium for game UI */
@@ -14,25 +22,91 @@
     font-display: swap;
 }
 
-/* Base Layout - Dark theme with zero margins */
+/* Base Layout - New color scheme */
 html,
 body {
     margin: 0;
-    background: #0b0f14;
-    /* Dark blue-black background */
-    color: #fff;
+    background: #f8dce3;
+    /* Main background color */
+    color: #000000;
+    /* Standard text color */
     font-family: GT Maru Medium, system-ui, sans-serif;
+}
+
+/* Navigation Bar */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #edb5c1;
+    /* Navigation background color */
+    z-index: 100;
+    border-bottom: 2px solid #000000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 60px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.nav-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffffff;
+    /* Title with black stroke effect */
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    color: #000000;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.nav-link.active {
+    background: rgba(0, 0, 0, 0.2);
 }
 
 /* Game Canvas - Instagram Reel format (9:16) scaled for desktop view */
 canvas {
     display: block;
     margin: 0 auto;
+    position: relative;
+    top: 100px;
     width: 540px;
     /* 9:16 scaled down for desktop viewing */
     height: 960px;
     background: radial-gradient(ellipse at center, #101722 0%, #070a0f 70%);
-    border: 2px solid #333;
+    border: 2px solid #000000;
 }
 
 /* UI Overlay Container - Absolute positioned overlay for game HUD */
@@ -46,31 +120,34 @@ canvas {
 /* Timer Display - Large timer shown during game */
 .timer {
     font-size: 40px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, .6);
+    color: #000000;
 }
 
 /* Subtitle Text - Smaller descriptive text */
 .subtitle {
     font-size: 14px;
     opacity: .85;
+    color: #000000;
 }
 
 /* Live Ranking Board - Top-right positioning with backdrop blur */
 .board {
     position: absolute;
+    display: none;
     right: 24px;
-    top: 60px;
-    background: rgba(0, 0, 0, .45);
-    backdrop-filter: blur(4px);
+    top: 80px;
+    /* Adjusted for new navigation height */
+    background: rgba(255, 255, 255, 0.9);
     padding: 12px 14px;
     border-radius: 12px;
     max-width: 360px;
+    border: 2px solid #000000;
 }
 
 .board h3 {
     margin: 0 0 8px 0;
     font-size: 18px;
-    opacity: .8;
+    color: #000000;
 }
 
 .board ol {
@@ -81,6 +158,7 @@ canvas {
     max-height: 280px;
     overflow: auto;
     /* Scrollable if many players */
+    color: #000000;
 }
 
 /* Status Badge - Small indicator badges */
@@ -89,6 +167,7 @@ canvas {
     margin-left: 8px;
     font-size: 11px;
     opacity: .75;
+    color: #000000;
 }
 
 /* Main Menu Overlay - Full-screen menu with centered content */
@@ -98,7 +177,8 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: #f8dce3;
+    /* Semi-transparent background color */
     z-index: 20;
     display: flex;
     flex-direction: column;
@@ -106,13 +186,29 @@ canvas {
     justify-content: center;
 }
 
-/* Main Menu Title - Large pizza emoji title */
-#main-menu h1 {
-    font-size: 4em;
-    color: #ff6b35;
-    /* Orange pizza color */
-    text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+/* Logo and Title Container */
+.logo-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 40px;
+}
+
+/* Main Logo */
+.main-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+/* Main Menu Title - Headlines with 4px black stroke */
+#main-menu h1 {
+    font-size: 3.5em;
+    color: #000000;
+    /* Headline color */
+    margin: 0;
+    text-align: center;
 }
 
 /* Menu Button Container */
@@ -122,45 +218,51 @@ canvas {
     gap: 20px;
 }
 
-/* Menu Buttons - Styled gradient buttons with hover effects */
+/* Menu Buttons - New color scheme */
 #main-menu button {
-    font-size: 24px;
+    font-size: 22px;
     padding: 16px 32px;
-    color: white;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     transition: transform 0.3s;
     font-family: inherit;
+    font-weight: bold;
 }
 
-/* Start Game Button - Orange gradient */
+/* Start Game Button - Primary button */
 #startFightBtn {
-    background: linear-gradient(45deg, #ff6b35, #ff8e53);
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    background: green;
+    /* Primary button background */
+    color: #ffffff;
+    /* Text on primary button */
+    border: 2px solid #000000;
 }
 
-/* Import Button - Purple gradient */
+/* Import Button - Secondary button */
 #importBtn {
     font-size: 20px;
     padding: 12px 24px;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    background: #edb5c1;
+    /* Secondary button background */
+    color: #000000;
+    /* Text on secondary button */
+    border: 2px solid #000000 !important;
 }
 
-/* Admin Button - Red gradient with smaller size */
+/* Admin Button - Danger button */
 .admin-btn {
-    font-size: 16px !important;
-    padding: 8px 16px !important;
-    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3) !important;
-    opacity: 0.8;
-    transition: all 0.3s ease;
+    font-size: 20px;
+    padding: 12px 24px;
+    background: #ff0000;
+    /* Secondary button background */
+    color: #ffffff;
+    /* Text on secondary button */
+    border: 2px solid #000000;
 }
 
 .admin-btn:hover {
     opacity: 1;
-    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5) !important;
 }
 
 /* Button Hover Effect - Slight upward movement */
@@ -171,7 +273,8 @@ canvas {
 /* Menu Description Text */
 #main-menu p {
     margin-top: 40px;
-    color: #ccc;
+    color: #000000;
+    /* Standard text color */
     text-align: center;
     max-width: 600px;
     line-height: 1.6;

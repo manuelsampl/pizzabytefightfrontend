@@ -1,4 +1,8 @@
-# 🍕 Pizza Royale - Frontend
+# 🍕 Pizza Byte Fight - Frontend
+
+<div align="center">
+  <img src="./Logo_pizzabytefight.png" alt="Pizza Byte Fight Logo" width="150" height="150">
+</div>
 
 Ein episches Battle Royale Spiel, bei dem deine Instagram Follower als Avatare um die letzte Pizza kämpfen! Entwickelt für [@pizzabytefight](https://www.instagram.com/pizzabytefight/) von der [CLIQUE](https://clique.wien).
 
@@ -6,9 +10,9 @@ Ein episches Battle Royale Spiel, bei dem deine Instagram Follower als Avatare u
 ![Instagram Format](https://img.shields.io/badge/Format-Instagram%20Reel-purple?style=for-the-badge&logo=instagram)
 ![Open Source](https://img.shields.io/badge/Open%20Source-MIT-green?style=for-the-badge&logo=opensource)
 
-## 🎮 Was ist Pizza Royale?
+## 🎮 Was ist Pizza Byte Fight?
 
-Pizza Royale ist ein automatisiertes Battle Royale Spiel im Instagram Reel Format (1080x1920px). Deine Instagram Follower werden als Avatare importiert und kämpfen in einem 20-Sekunden-Kampf um die letzte Pizza. Das Spiel wird automatisch als MP4-Video aufgenommen - perfekt für deine Instagram Story!
+Pizza Byte Fight ist ein automatisiertes Battle Royale Spiel im Instagram Reel Format (1080x1920px). Deine Instagram Follower werden als Avatare importiert und kämpfen in einem 20-Sekunden-Kampf um die letzte Pizza. Das Spiel wird automatisch als MP4-Video aufgenommen - perfekt für deine Instagram Story!
 
 ### ✨ Features
 
@@ -26,7 +30,7 @@ Pizza Royale ist ein automatisiertes Battle Royale Spiel im Instagram Reel Forma
 
 - Node.js (v16 oder höher)
 - Ein moderner Browser (Chrome, Firefox, Safari)
-- Backend-Server (siehe [Backend README](../backend/README.md))
+- **Backend-Server** (siehe Backend API Dokumentation unten)
 
 ### Installation
 
@@ -43,17 +47,162 @@ Pizza Royale ist ein automatisiertes Battle Royale Spiel im Instagram Reel Forma
    npx serve -p 8080
    ```
 
-3. **Backend starten** (in separatem Terminal)
-   ```bash
-   cd ../backend
-   npm install
-   npm run dev
-   ```
+3. **Backend konfigurieren und starten**
+   - Das Backend ist **nicht open source** und muss separat bereitgestellt werden
+   - Siehe Backend API Dokumentation für erforderliche Endpoints
 
 4. **Öffne das Spiel**
    ```
    http://localhost:8080
    ```
+
+## 🔌 Backend API Dokumentation
+
+Das Frontend benötigt ein Backend mit folgenden API-Endpoints:
+
+### 🎮 Game Management
+
+#### `POST /api/matches`
+Erstellt ein neues Match.
+```javascript
+// Request: (Empty body)
+// Response:
+{
+  "id": "match_id",
+  "seed": 12345,
+  "startedAt": "2024-01-01T10:00:00Z"
+}
+```
+
+#### `POST /api/game-sessions`
+Speichert Spiel-Session-Daten.
+```javascript
+// Request:
+{
+  "duration": 25,
+  "winnerId": "imported_username",
+  "winnerUsername": "Display Name",
+  "winningReason": "Pizza eaten up",
+  "totalPlayers": 32,
+  "survivedPlayers": 8,
+  "playerStats": [
+    {
+      "igUserId": "imported_username",
+      "username": "Display Name",
+      "pizzasEaten": 15.5,
+      "survived": true,
+      "finalRank": 1
+    }
+  ]
+}
+
+// Response:
+{
+  "success": true,
+  "gameSessionId": "session_id"
+}
+```
+
+### 👥 User Import Management
+
+#### `POST /api/import/instagram-followers`
+Importiert Follower aus Instagram HTML.
+```javascript
+// Request:
+{
+  "html": "<div>...Instagram HTML...</div>"
+}
+
+// Response:
+{
+  "parsed": 25,
+  "saved": 23,
+  "skipped": 2
+}
+```
+
+#### `GET /api/import/followers`
+Lädt alle importierten Follower.
+```javascript
+// Response:
+[
+  {
+    "username": "follower1",
+    "displayName": "Follower Name",
+    "avatarUrl": "https://..."
+  }
+]
+```
+
+#### `DELETE /api/import/followers`
+Löscht alle importierten Follower.
+```javascript
+// Response:
+{
+  "message": "All followers deleted"
+}
+```
+
+### 📊 Admin & Statistics
+
+#### `GET /api/admin/stats`
+Lädt Statistiken für Admin Panel.
+```javascript
+// Response:
+{
+  "userCount": 150,
+  "matchCount": 12,
+  "gameSessionCount": 8,
+  "totalPizzasEaten": 245.7,
+  "recentSessions": [
+    {
+      "winnerUsername": "Winner Name",
+      "winningReason": "Pizza eaten up",
+      "totalPlayers": 32,
+      "survivedPlayers": 8,
+      "durationSec": 25
+    }
+  ]
+}
+```
+
+#### `DELETE /api/admin/reset-database`
+Setzt die Datenbank zurück.
+```javascript
+// Response:
+{
+  "message": "Database reset completed"
+}
+```
+
+### 🖼️ Image Proxy
+
+#### `GET /api/image-proxy?url=<image_url>`
+Proxy für Bilder (CORS-Umgehung).
+```javascript
+// Query Parameter:
+// url: The image URL to proxy
+
+// Response: Binary image data
+```
+
+### 🎯 Roster Management
+
+#### `GET /api/roster`
+Lädt Spieler-Roster für das Spiel.
+```javascript
+// Response:
+{
+  "participants": [
+    {
+      "id": "imported_username",
+      "name": "Display Name",
+      "avatarUrl": "https://...",
+      "type": "FOLLOWER"
+    }
+  ]
+}
+```
 
 ## 🎯 Spielablauf
 
@@ -63,7 +212,7 @@ Pizza Royale ist ein automatisiertes Battle Royale Spiel im Instagram Reel Forma
 - Oder nutze die Demo-Daten für sofortiges Spielen
 
 ### 2. Spiel starten
-- Klicke "🎮 Pizza Royale starten"
+- Klicke "Pizza Battle starten"
 - Wähle Recording-Option:
   - **🎮 Record Game Video**: Zeichnet das Spiel als MP4 auf
   - **⏭️ Skip Recording**: Spielt ohne Aufnahme
@@ -149,7 +298,7 @@ const RECORDING_CONFIG = {
 
 - **Instagram**: [@pizzabytefight](https://www.instagram.com/pizzabytefight/)
 - **Entwicklung**: [CLIQUE Wien](https://clique.wien)
-- **Backend**: [Backend Repository](../backend/)
+- **Backend**: Nicht open source - siehe API Dokumentation oben
 
 ## 🤝 Beitragen
 

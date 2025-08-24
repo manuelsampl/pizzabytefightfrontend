@@ -23,13 +23,16 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
     // === GAME CONSTANTS ===
     const WIDTH = 1080, HEIGHT = 1920;  // Instagram Reel format
     const WINNER_DISPLAY_TIME = 5.0;    // Seconds to show winner
-    const MAX_ANIMATED_PLAYERS = 1000;  // Maximum animated participants for performance
+    const MAX_ANIMATED_PLAYERS = 2000;  // Maximum animated participants for performance
     const MAX_SPEED = 18;               // Maximum avatar movement speed
     const PIZZA_CENTER = { x: WIDTH / 2, y: HEIGHT / 2 };
     const EAT_RADIUS = 150;             // Pizza eating radius
     const CULL_DURATION = 5;          // Seconds to eliminate non-animated players
     const ATTACK_BOOST_PER_BITE = 2;  // Attack increase per pizza eaten
-    const PIZZA_HP_MULITPLIER = 1.8;
+    const pizzaImage = await loadImage('./pizza.png');
+    const defaultUserImage = await loadImage('./user.jpeg');  // Default image for static players
+    const defaultUserImageUrl = defaultUserImage.src;
+    let PIZZA_HP_MULITPLIER = 1.5;
 
     // === CANVAS SETUP ===
     const canvas = document.getElementById('game');
@@ -95,10 +98,10 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
     // Fallback to generated demo players if API unavailable
     if (!Array.isArray(roster) || roster.length === 0) {
         console.log('⚠️ Using fallback demo players');
-        roster = Array.from({ length: 10000 }, (_, i) => ({
+        roster = Array.from({ length: 100000 }, (_, i) => ({
             igUserId: 'p' + i,
             username: 'Player ' + (i + 1),
-            avatarUrl: `https://i.pravatar.cc/128?img=${(i % 70) + 1}`,
+            avatarUrl: defaultUserImageUrl,
             baseHp: 100,
             baseArmor: 0,
             baseMass: 1.0,
@@ -128,9 +131,13 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
     console.log(`Game setup: ${participants} total, ${animatedPlayers.length} animated, ${staticPlayers.length} static`);
 
     // === PIZZA HP SCALING ===
+    // Dynamic pizza HP multiplier based on animated player count
+    // Base: 2.5, increase by 0.1 for every 50 animated players (so 1000 players = 4.5)
+    const animatedPlayerGroups = Math.floor(animatedPlayers.length / 50);
+    PIZZA_HP_MULITPLIER = 1.5 + (animatedPlayerGroups * 0.08);
+    console.log(`Pizza HP Multiplier adjusted: ${PIZZA_HP_MULITPLIER} (${animatedPlayers.length} animated players, ${animatedPlayerGroups} groups of 50)`);
+
     // Dynamic pizza HP based on ANIMATED participant count (for game balance)
-
-
     const PIZZA_HP_TOTAL = animatedPlayers.length * PIZZA_HP_MULITPLIER;  // Based on animated players only
 
     // === IMAGE LOADING ===
@@ -157,8 +164,7 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
         });
     }
 
-    const pizzaImage = await loadImage('./pizza.png');
-    const defaultUserImage = await loadImage('./user.jpeg');  // Default image for static players
+
     const images = new Map();
 
     // Load all player avatar images (only for animated players to save memory)
@@ -173,13 +179,14 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
     // === DYNAMIC AVATAR SIZING ===
     // Avatar size scales based on number of alive players
     const avatarSizeByAlive = (n) => {
-        if (n > MAX_ANIMATED_PLAYERS) return 5;
-        if (n > 500) return 45;
-        if (n > 100) return 65;
-        if (n > 20) return 105;
-        if (n > 10) return 135;
-        if (n > 5) return 155;
-        return 175;
+        if (n > MAX_ANIMATED_PLAYERS) return 10;
+        if (n > 700) return 15;
+        if (n > 500) return 35;
+        if (n > 100) return 55;
+        if (n > 20) return 75;
+        if (n > 10) return 95;
+        if (n > 5) return 105;
+        return 135;
     };
 
     // === GAME STATE INITIALIZATION ===
@@ -246,14 +253,17 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
     });
 
     // Initialize STATIC player dots (visual only, will be culled over time)
-    let staticDots = staticPlayers.map(p => {
-        const pos = generateSafePosition(0.5);  // Use fixed 5px radius for static dots
+    let staticDots = staticPlayers.map((p, index) => {
+        const pos = generateSafePosition(1);  // Use minimal radius for tiny dots
 
         return {
             id: p.igUserId,
             name: p.username,
             x: pos.x,
             y: pos.y,
+            baseX: pos.x,  // Store original position for wiggle animation
+            baseY: pos.y,  // Store original position for wiggle animation
+            wiggleOffset: index * 0.03,  // Even faster staggered animation
             alive: true,
             isAnimated: false,  // Static dot
             cullTime: rng() * CULL_DURATION  // Random time within cull period to die
@@ -766,19 +776,46 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
         drawBackground();
 
         // === STATIC DOTS RENDERING (non-animated players) ===
-        // Batch render static dots with fixed 5px size for performance
+        // Render tiny static dots with extreme motion animation
         const aliveDots = staticDots.filter(d => d.alive);
         if (aliveDots.length > 0) {
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            for (const dot of aliveDots) {
-                ctx.moveTo(dot.x + 5, dot.y);
-                ctx.arc(dot.x, dot.y, 5, 0, 2 * Math.PI);  // Fixed 5px radius
-            }
-            ctx.fill();
-        }
+            // Update wiggle positions every frame with extreme motion
+            const wiggleTime = time * 15;  // Much faster wiggle frequency (almost double)
+            const wiggleAmplitude = 25;  // Even larger wiggle amplitude (more extreme motion)
 
-        // === PIZZA RENDERING (now in foreground) ===
+            for (const dot of aliveDots) {
+                const wigglePhase = wiggleTime + dot.wiggleOffset;
+                // Add more complex motion patterns for more chaotic movement
+                dot.x = dot.baseX + Math.sin(wigglePhase) * wiggleAmplitude + Math.sin(wigglePhase * 2.3) * (wiggleAmplitude * 0.3);
+                dot.y = dot.baseY + Math.cos(wigglePhase * 1.7) * wiggleAmplitude + Math.cos(wigglePhase * 0.7) * (wiggleAmplitude * 0.4);
+            }
+
+            // Render round dots with defaultUserImage background
+            for (const dot of aliveDots) {
+                ctx.save();
+                ctx.translate(Math.round(dot.x), Math.round(dot.y));
+
+                // Draw round dot with defaultUserImage
+                const dotSize = 5;  // Diameter of the dot
+                const dotRadius = dotSize / 2;
+
+                ctx.beginPath();
+                ctx.arc(0, 0, dotRadius, 0, 2 * Math.PI);
+                ctx.clip();
+
+                if (defaultUserImage) {
+                    ctx.drawImage(defaultUserImage, -dotRadius, -dotRadius, dotSize, dotSize);
+                } else {
+                    // Fallback to white circle if no image
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, dotRadius, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }        // === PIZZA RENDERING (now in foreground) ===
         drawPizza(ctx, PIZZA_CENTER.x, PIZZA_CENTER.y, EAT_RADIUS, pizzaHP / PIZZA_HP_TOTAL, FONT);
 
         // === ANIMATED PLAYERS RENDERING (with Level-of-Detail) ===
@@ -842,9 +879,8 @@ export async function startGame(recordingChoice = { recorder: null, type: 'none'
                 ctx.restore();
             }
 
-            // Draw HP ring only when all static players are dead
-            const staticPlayersAlive = staticDots.filter(d => d.alive).length;
-            if (staticPlayersAlive === 0) {
+            // Draw HP ring only during endgame (<=50 players)
+            if (endgameActive) {
                 const hpRatio = Math.max(0, a.hp) / 100;
                 ctx.strokeStyle = hpRatio > 0.5 ? "#41ff9e" : hpRatio > 0.2 ? "#ffc148" : "#ff4d5a";
                 ctx.lineWidth = Math.max(2, Math.floor(playerRadius / 8));  // Scale with player size
