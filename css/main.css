@@ -1,0 +1,178 @@
+/**
+ * Pizza Royale - Main Stylesheet
+ * Contains all styling for the Pizza Battle Royale game interface
+ */
+
+/* Custom Font Definition - GT Maru Medium for game UI */
+@font-face {
+    font-family: "GT Maru Medium";
+    src: url("../fonts/GT-Maru-Medium.woff2") format("woff2"),
+        url("../fonts/GT-Maru-Medium.woff") format("woff"),
+        url("../fonts/GT-Maru-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Base Layout - Dark theme with zero margins */
+html,
+body {
+    margin: 0;
+    background: #0b0f14;
+    /* Dark blue-black background */
+    color: #fff;
+    font-family: GT Maru Medium, system-ui, sans-serif;
+}
+
+/* Game Canvas - Instagram Reel format (9:16) scaled for desktop view */
+canvas {
+    display: block;
+    margin: 0 auto;
+    width: 540px;
+    /* 9:16 scaled down for desktop viewing */
+    height: 960px;
+    background: radial-gradient(ellipse at center, #101722 0%, #070a0f 70%);
+    border: 2px solid #333;
+}
+
+/* UI Overlay Container - Absolute positioned overlay for game HUD */
+#ui {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Allow canvas interaction underneath */
+}
+
+/* Timer Display - Large timer shown during game */
+.timer {
+    font-size: 40px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .6);
+}
+
+/* Subtitle Text - Smaller descriptive text */
+.subtitle {
+    font-size: 14px;
+    opacity: .85;
+}
+
+/* Live Ranking Board - Top-right positioning with backdrop blur */
+.board {
+    position: absolute;
+    right: 24px;
+    top: 60px;
+    background: rgba(0, 0, 0, .45);
+    backdrop-filter: blur(4px);
+    padding: 12px 14px;
+    border-radius: 12px;
+    max-width: 360px;
+}
+
+.board h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    opacity: .8;
+}
+
+.board ol {
+    margin: 0;
+    padding-left: 16px;
+    font-size: 16px;
+    line-height: 1.4;
+    max-height: 280px;
+    overflow: auto;
+    /* Scrollable if many players */
+}
+
+/* Status Badge - Small indicator badges */
+.badge {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 11px;
+    opacity: .75;
+}
+
+/* Main Menu Overlay - Full-screen menu with centered content */
+#main-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main Menu Title - Large pizza emoji title */
+#main-menu h1 {
+    font-size: 4em;
+    color: #ff6b35;
+    /* Orange pizza color */
+    text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+    margin-bottom: 40px;
+}
+
+/* Menu Button Container */
+#main-menu .button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Menu Buttons - Styled gradient buttons with hover effects */
+#main-menu button {
+    font-size: 24px;
+    padding: 16px 32px;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    font-family: inherit;
+}
+
+/* Start Game Button - Orange gradient */
+#startFightBtn {
+    background: linear-gradient(45deg, #ff6b35, #ff8e53);
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+/* Import Button - Purple gradient */
+#importBtn {
+    font-size: 20px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Admin Button - Red gradient with smaller size */
+.admin-btn {
+    font-size: 16px !important;
+    padding: 8px 16px !important;
+    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3) !important;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+    opacity: 1;
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5) !important;
+}
+
+/* Button Hover Effect - Slight upward movement */
+#main-menu button:hover {
+    transform: translateY(-2px);
+}
+
+/* Menu Description Text */
+#main-menu p {
+    margin-top: 40px;
+    color: #ccc;
+    text-align: center;
+    max-width: 600px;
+    line-height: 1.6;
+}
